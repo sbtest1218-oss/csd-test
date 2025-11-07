@@ -1,0 +1,47 @@
+# .github/workflows/test.yml
+name: Run Tests
+
+# いつ実行するか
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+# 実行する処理
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. コードをチェックアウト
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. PHPをセットアップ
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, pdo, pdo_sqlite
+        coverage: none
+
+    # 3. Composerの依存関係をインストール
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    # 4. .envファイルをコピー
+    - name: Copy .env
+      run: cp .env.example .env
+
+    # 5. アプリケーションキーを生成
+    - name: Generate app key
+      run: php artisan key:generate
+
+    # 6. ディレクトリ権限を設定
+    - name: Set directory permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    # 7. テストを実行
+    - name: Run tests
+      run: php artisan test
