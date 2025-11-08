@@ -32,7 +32,7 @@ class TodoRepository
     {
         $todo = Todo::find($id);
 
-        if (!$todo) {
+        if (! $todo) {
             return false;
         }
 
@@ -54,7 +54,7 @@ class TodoRepository
     {
         $todo = Todo::find($id);
 
-        if (!$todo) {
+        if (! $todo) {
             return false;
         }
 
