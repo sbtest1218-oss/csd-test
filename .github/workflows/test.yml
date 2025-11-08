@@ -4,9 +4,9 @@ name: Run Tests
 # いつ実行するか
 on:
   push:
-    branches: [main, master, develop]
+    branches: [ main, master, develop ]
   pull_request:
-    branches: [main, master, develop]
+    branches: [ main, master, develop ]
 
 # 実行する処理
 jobs:
@@ -14,39 +14,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. コードをチェックアウト
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # 1. コードをチェックアウト
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # 2. PHPをセットアップ
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          extensions: mbstring, pdo, pdo_sqlite
-          coverage: none
+    # 2. PHPをセットアップ
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, json, bcmath
+        coverage: none
 
-      # 3. Composerの依存関係をインストール
-      - name: Install dependencies
-        working-directory: src
-        run: composer install --prefer-dist --no-progress
+    # 3. .envファイルをコピー
+    - name: Copy .env
+      working-directory: src
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      # 4. .envファイルをコピー
-      - name: Copy .env
-        working-directory: src
-        run: cp .env.example .env
+    # 4. Composerの依存関係をインストール
+    - name: Install dependencies
+      working-directory: src
+      run: composer install --prefer-dist --no-progress --no-suggest
 
-      # 5. アプリケーションキーを生成
-      - name: Generate app key
-        working-directory: src
-        run: php artisan key:generate
+    # 5. アプリケーションキーを生成
+    - name: Generate key
+      working-directory: src
+      run: php artisan key:generate
 
-      # 6. ディレクトリ権限を設定
-      - name: Set directory permissions
-        working-directory: src
-        run: chmod -R 777 storage bootstrap/cache
+    # 6. ディレクトリ権限を設定
+    - name: Directory Permissions
+      working-directory: src
+      run: chmod -R 777 storage bootstrap/cache
 
-      # 7. テストを実行
-      - name: Run tests
-        working-directory: src
-        run: php artisan test
+    # 7. PHPStanで静的解析（追加）
+    - name: Run PHPStan
+      working-directory: src
+      run: ./vendor/bin/phpstan analyse --memory-limit=512M --error-format=github
+
+    # 8. PHP CS Fixerでコードスタイルチェック（追加）
+    - name: Run PHP CS Fixer
+      working-directory: src
+      run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --format=txt
+
+    # 9. テストを実行
+    - name: Run tests
+      working-directory: src
+      run: php artisan test
