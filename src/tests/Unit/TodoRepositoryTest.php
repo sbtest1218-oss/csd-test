@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Repositories\TodoRepository;
 use App\Models\Todo;
+use App\Repositories\TodoRepository;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class TodoRepositoryTest extends TestCase
 {
@@ -89,7 +89,9 @@ class TodoRepositoryTest extends TestCase
 
         // Assert
         $this->assertCount(1, $pending);
-        $this->assertEquals('買い物', $pending[0]->title);
+        /** @var \App\Models\Todo $firstPending */
+        $firstPending = $pending[0];
+        $this->assertEquals('買い物', $firstPending->title);
     }
 
     /**
