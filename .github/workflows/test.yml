@@ -6,7 +6,7 @@ on:
   push:
     branches: [ main, master, develop ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, master,develop ]
 
 # 実行する処理
 jobs:
