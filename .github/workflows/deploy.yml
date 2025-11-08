@@ -64,8 +64,8 @@ jobs:
           --document-name "AWS-RunShellScript" \
           --comment "Deploy from GitHub Actions" \
           --parameters 'commands=[
-            "cd /home/ec2-user/your-project",
-            "sudo -u ec2-user bash /home/ec2-user/your-project/deploy.sh"
+            "cd /home/ec2-user/csd-test",
+            "sudo -u ec2-user bash /home/ec2-user/csd-test/deploy.sh"
           ]' \
           --output text \
           --query "Command.CommandId")
