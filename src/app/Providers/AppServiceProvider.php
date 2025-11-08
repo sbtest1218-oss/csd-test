@@ -19,8 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 本番環境でCloudFront/ALBからのHTTPSを信頼
-        if ($this->app->environment('production') && request()->header('X-Forwarded-Proto') === 'https') {
+        // 本番環境では常にHTTPSを使用
+        if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }
